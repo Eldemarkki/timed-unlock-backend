@@ -1,6 +1,6 @@
 import { Response } from "express";
-import { body, query } from "express-validator";
-import { createNewItem, getAllItems, getUnlockedItems } from "../logic/projects";
+import { body, param, query } from "express-validator";
+import { createNewItem, editItem, getAllItems, getItem, getUnlockedItems } from "../logic/projects";
 import { handleErrors } from "../utils/handleErrorsMiddleware";
 import { ProjectRequest } from "./singleProjectRouter";
 import Router from "express-promise-router";
@@ -33,5 +33,21 @@ itemsRouter.post("/",
     async (req: ProjectRequest, res: Response) => {
         res.json(await createNewItem(req.body.data, req.body.unlockDate, req.user!.id, req.project!));
     })
+
+itemsRouter.put("/:itemId",
+    requireAuthentication,
+    param("itemId").isMongoId().withMessage("Malformed item ID"),
+    body("data").optional(),
+    body("unlockDate").optional().isISO8601().toDate(),
+    handleErrors,
+    async (req: ProjectRequest, res: Response) => {
+        const itemId = req.params.itemId;
+        let changes: { [key: string]: string } = {};
+        if (req.body.hasOwnProperty("data")) changes.data = req.body.data;
+        if (req.body.hasOwnProperty("unlockDate")) changes.unlockDate = req.body.unlockDate;
+
+        res.json(await editItem(itemId, changes, req.user!.id))
+    }
+)
 
 export default itemsRouter;

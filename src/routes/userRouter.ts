@@ -35,7 +35,7 @@ userRouter.post("/register",
     })
 
 userRouter.post("/login",
-    body("email").isEmail(),
+    body("email").exists(),
     body("password").exists(),
     handleErrors,
     async (req: Request, res: Response) => {
@@ -53,7 +53,7 @@ userRouter.post("/login",
             String(process.env.SECRET),
             { expiresIn: 4 * 60 * 60 });
 
-        res.json({ token })
+        res.json({ token, ...userForToken })
     })
 
 export default userRouter;
