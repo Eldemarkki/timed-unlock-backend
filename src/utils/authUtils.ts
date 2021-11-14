@@ -4,7 +4,7 @@ import User from "../data/User";
 import { LogInAgainError, UnauthorizedError } from "./errors";
 
 export interface TokenUser {
-    email: string;
+    username: string;
     _id: string;
 }
 

@@ -1,12 +1,12 @@
 import mongoose, { Document } from "mongoose";
 
 export interface IUser extends Document {
-    email: string;
+    username: string;
     passwordHash: string;
 }
 
 const schema = new mongoose.Schema({
-    email: {
+    username: {
         type: String,
         required: true,
         unique: true

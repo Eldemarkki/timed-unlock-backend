@@ -18,16 +18,16 @@ userRouter.get("/",
     })
 
 userRouter.post("/register",
-    body("email").isEmail(),
-    body("password").isLength({ min: 8, max: 64 }),
+    body("username").exists().isString().isLength({ min: 4, max: 32 }),
+    body("password").exists().isString().isLength({ min: 8, max: 64 }),
     handleErrors,
     async (req: Request, res: Response) => {
-        if (await User.exists({ email: req.body.email })) throw DuplicateUserError;
+        if (await User.exists({ username: req.body.username })) throw DuplicateUserError;
 
         const saltRounds = 10
         const passwordHash = await bcrypt.hash(req.body.password, saltRounds);
         const newUser = await User.create({
-            email: req.body.email,
+            username: req.body.username,
             passwordHash
         })
 
@@ -35,16 +35,16 @@ userRouter.post("/register",
     })
 
 userRouter.post("/login",
-    body("email").exists(),
-    body("password").exists(),
+    body("username").exists().isString().isLength({ min: 4, max: 32 }),
+    body("password").exists().isString().isLength({ min: 8, max: 64 }),
     handleErrors,
     async (req: Request, res: Response) => {
-        const user = await User.findOne({ email: req.body.email }).select("+passwordHash");
+        const user = await User.findOne({ username: req.body.username }).select("+passwordHash");
         const passwordCorrect = user && await bcrypt.compare(req.body.password, user.passwordHash)
         if (!passwordCorrect) throw InvalidLoginCredentialsError;
 
         const userForToken: TokenUser = {
-            email: user.email,
+            username: user.username,
             _id: user._id
         }
 
@@ -53,7 +53,7 @@ userRouter.post("/login",
             String(process.env.SECRET),
             { expiresIn: 4 * 60 * 60 });
 
-        res.json({ token, ...userForToken })
+        res.json({ token, ...userForToken, ...user })
     })
 
 export default userRouter;
