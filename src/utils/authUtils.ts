@@ -5,7 +5,7 @@ import { LogInAgainError, UnauthorizedError } from "./errors";
 
 export interface TokenUser {
     email: string;
-    id: string;
+    _id: string;
 }
 
 export interface UserRequest extends Request {
@@ -28,7 +28,7 @@ export const requireAuthentication = async (req: UserRequest, res: Response, nex
         const token = authToken.startsWith("Bearer ") ? authToken.substring(7) : authToken;
         const decodedUser = <TokenUser>jwt.verify(token, String(process.env.SECRET))
 
-        if (await User.exists({ _id: decodedUser.id })) {
+        if (await User.exists({ _id: decodedUser._id })) {
             req.user = decodedUser
         }
         else {

@@ -13,7 +13,7 @@ const errorHandler = (err: Error, req: Request, res: Response, next: NextFunctio
             res.status(err.status).json({ error: err.message })
         }
         else {
-            res.status(err.status).end();
+            res.sendStatus(err.status);
         }
     }
     else if (err instanceof TokenExpiredError) {

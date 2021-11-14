@@ -34,7 +34,7 @@ singleProjectRouter.use("/",
 singleProjectRouter.get("/",
     requireAuthentication,
     async (req: ProjectRequest, res) => {
-        res.json(await getProject(req.project?.id, req.user!.id))
+        res.json(await getProject(req.project?.id, req.user!._id))
     })
 
 singleProjectRouter.use("/items", itemsRouter)

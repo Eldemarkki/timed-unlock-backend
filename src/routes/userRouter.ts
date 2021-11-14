@@ -14,7 +14,7 @@ userRouter.get("/",
     requireAuthentication,
     async (req: UserRequest, res) => {
         if (!req.user) throw UnauthorizedError;
-        res.json(await User.findById(req.user.id))
+        res.json(await User.findById(req.user._id))
     })
 
 userRouter.post("/register",
@@ -45,7 +45,7 @@ userRouter.post("/login",
 
         const userForToken: TokenUser = {
             email: user.email,
-            id: user._id
+            _id: user._id
         }
 
         const token = jwt.sign(

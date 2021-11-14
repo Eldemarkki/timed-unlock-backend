@@ -11,7 +11,7 @@ projectsRouter.use("/:projectId", singleProjectRouter);
 projectsRouter.get("/",
     requireAuthentication,
     async (req: UserRequest, res) => {
-        res.json(await getAllProjects(req.user!.id));
+        res.json(await getAllProjects(req.user!._id));
     })
 
 projectsRouter.post("/",
@@ -20,7 +20,7 @@ projectsRouter.post("/",
     body("items"),
     handleErrors,
     async (req: UserRequest, res) => {
-        const newProject = await createProject(req.body.projectName, req.user!.id, req.body.items);
+        const newProject = await createProject(req.body.projectName, req.user!._id, req.body.items);
         res.json(newProject);
     })
 

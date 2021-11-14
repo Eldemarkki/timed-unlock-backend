@@ -18,7 +18,7 @@ itemsRouter.get("/",
         const projectId = req.project!.id;
         if (req.query.includeLocked) {
             if (!req.user) throw UnauthorizedError
-            res.json(await getAllItems(req.project!, req.user.id))
+            res.json(await getAllItems(req.project!, req.user._id))
         }
         else {
             res.json(await getUnlockedItems(projectId));
@@ -31,7 +31,7 @@ itemsRouter.post("/",
     body("unlockDate").isISO8601().toDate(),
     handleErrors,
     async (req: ProjectRequest, res: Response) => {
-        res.json(await createNewItem(req.body.data, req.body.unlockDate, req.user!.id, req.project!));
+        res.json(await createNewItem(req.body.data, req.body.unlockDate, req.user!._id, req.project!));
     })
 
 itemsRouter.put("/:itemId",
@@ -46,7 +46,7 @@ itemsRouter.put("/:itemId",
         if (req.body.hasOwnProperty("data")) changes.data = req.body.data;
         if (req.body.hasOwnProperty("unlockDate")) changes.unlockDate = req.body.unlockDate;
 
-        res.json(await editItem(itemId, changes, req.user!.id))
+        res.json(await editItem(itemId, changes, req.user!._id))
     }
 )
 

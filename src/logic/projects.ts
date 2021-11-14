@@ -24,7 +24,7 @@ export const createProject = async (projectName: string, userId: string | Object
 
 export const getUnlockedItems = async (projectId: string | ObjectId) => {
     return await Item.find({
-        projectId: projectId,
+        project: projectId,
         unlockDate: {
             $lte: new Date()
         }
