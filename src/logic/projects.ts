@@ -14,6 +14,15 @@ export const getProject = async (projectId: string | ObjectId, userId: string | 
     return project
 }
 
+export const deleteProject = async (projectId: string | ObjectId, userId: string | ObjectId) => {
+    const project = await Project.findById(projectId).populate("items");
+    if (!project) throw NoProjectFoundError;
+    if (String(project.admin) !== String(userId)) throw MissingPermissionsToProjectError;
+
+    await Project.findByIdAndDelete(projectId)
+    return;
+}
+
 export const createProject = async (projectName: string, userId: string | ObjectId, items: [string | ObjectId]) => {
     return await Project.create({
         name: projectName,
@@ -62,6 +71,15 @@ export const editItem = async (itemId: string | ObjectId, changes: { [key: strin
     const item = await Item.findById(itemId);
     if (!item) throw NoProjectFoundError;
     if (String(item.admin) !== String(userId)) throw MissingPermissionsToItemError;
-    
+
     return await Item.findByIdAndUpdate(itemId, changes, { new: true });
+}
+
+export const deleteItem = async (itemId: string | ObjectId, userId: string | ObjectId) => {
+    const item = await Item.findById(itemId);
+    if (!item) throw NoProjectFoundError;
+    if (String(item.admin) !== String(userId)) throw MissingPermissionsToItemError;
+
+    await Item.findByIdAndDelete(itemId);
+    return;
 }

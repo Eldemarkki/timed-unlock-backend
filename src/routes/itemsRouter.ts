@@ -1,10 +1,10 @@
 import { Response } from "express";
 import { body, param, query } from "express-validator";
-import { createNewItem, editItem, getAllItems, getItem, getUnlockedItems } from "../logic/projects";
+import { createNewItem, deleteItem, editItem, getAllItems, getItem, getUnlockedItems } from "../logic/projects";
 import { handleErrors } from "../utils/handleErrorsMiddleware";
 import { ProjectRequest } from "./singleProjectRouter";
 import Router from "express-promise-router";
-import { optionalAuthentication, requireAuthentication } from "../utils/authUtils";
+import { optionalAuthentication, requireAdminToProject, requireAuthentication } from "../utils/authUtils";
 import { UnauthorizedError } from "../utils/errors";
 
 const itemsRouter = Router({ mergeParams: true });
@@ -47,6 +47,16 @@ itemsRouter.put("/:itemId",
         if (req.body.hasOwnProperty("unlockDate")) changes.unlockDate = req.body.unlockDate;
 
         res.json(await editItem(itemId, changes, req.user!._id))
+    }
+)
+
+itemsRouter.delete("/:itemId",
+    requireAuthentication,
+    requireAdminToProject,
+    param("itemId").isMongoId().withMessage("Malformed item ID"),
+    handleErrors,
+    async (req: ProjectRequest, res: Response) => {
+        res.json(await deleteItem(req.params.itemId, req.user!._id))
     }
 )
 
