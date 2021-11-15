@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { body } from "express-validator";
 import User from "../data/User";
-import bcrypt from "bcrypt"
+import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import { DuplicateUserError, InvalidLoginCredentialsError, UnauthorizedError } from "../utils/errors";
 import { requireAuthentication, TokenUser, UserRequest } from "../utils/authUtils";
